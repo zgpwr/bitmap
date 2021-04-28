@@ -3,7 +3,9 @@ package bitmap_test
 import (
 	"fmt"
 	"github.com/zgpwr/bitmap"
+	"math/rand"
 	"testing"
+	"time"
 )
 
 func TestBitMap(t *testing.T) {
@@ -20,7 +22,7 @@ func TestBitMap(t *testing.T) {
 	for _, v := range bits {
 		bm1.SetBit(uint32(v))
 	}
-	fmt.Printf("bm1: %s\n", bm1.ToString())
+	fmt.Printf("bm1: %s, bitCount:%d\n", bm1.ToString(), bm1.BitCount())
 	fmt.Printf("bm1: data:%v\n", bm1.GetData())
 
 	bm2 := bitmap.NewBitMap(10)
@@ -28,18 +30,28 @@ func TestBitMap(t *testing.T) {
 	for _, v := range bits {
 		bm2.SetBit(uint32(v))
 	}
-	fmt.Printf("bm2: %s\n", bm2.ToString())
+	fmt.Printf("bm2: %s, bitCount:%d\n", bm2.ToString(), bm2.BitCount())
 	fmt.Printf("bm2: data:%v\n", bm2.GetData())
 
 	bm3 := bm1.And(bm2)
-	fmt.Printf("b1 b2 交集: %s\n", bm3.ToString())
+	fmt.Printf("b1 b2 交集: %s, bitCount:%d\n", bm3.ToString(), bm3.BitCount())
 	fmt.Printf("bm3: data:%v\n", bm3.GetData())
 
 	bm3 = bm1.Or(bm2)
-	fmt.Printf("b1 b2 并集: %s\n", bm3.ToString())
+	fmt.Printf("b1 b2 并集: %s, bitCount:%d\n", bm3.ToString(), bm3.BitCount())
 	fmt.Printf("bm3: data:%v\n", bm3.GetData())
 
 	bm3 = bm1.AndNot(bm2)
-	fmt.Printf("b1 b2 差集: %s\n", bm3.ToString())
+	fmt.Printf("b1 b2 差集: %s, bitCount:%d\n", bm3.ToString(), bm3.BitCount())
 	fmt.Printf("bm3: data:%v\n", bm3.GetData())
+}
+
+func TestLargeBitMap(t *testing.T) {
+	rand.Seed(time.Now().UnixNano())
+	bm1 := bitmap.NewBitMap(100000000)
+	for i := 0; i < 100000000; i++ {
+		num := rand.Int31n(100000000)
+		bm1.SetBit(uint32(num))
+	}
+	fmt.Printf("bm1: bitcount: %d\n", bm1.BitCount())
 }

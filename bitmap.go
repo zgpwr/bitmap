@@ -11,6 +11,9 @@ type BitMap struct {
 }
 
 func NewBitMap(size uint32) *BitMap {
+	if size <= 0 {
+		return nil
+	}
 	if size%8 > 0 {
 		size += 8 - size%8
 	}
@@ -23,7 +26,7 @@ func NewBitMap(size uint32) *BitMap {
 }
 
 func (bm *BitMap) SetBit(offset uint32) {
-	if offset > bm.bitSize {
+	if offset > bm.bitSize || offset <= 0 {
 		return
 	}
 	offset--
@@ -32,7 +35,7 @@ func (bm *BitMap) SetBit(offset uint32) {
 }
 
 func (bm *BitMap) GetBit(offset uint32) uint8 {
-	if offset > bm.bitSize {
+	if offset > bm.bitSize || offset <= 0 {
 		return 0
 	}
 	offset--
@@ -41,12 +44,23 @@ func (bm *BitMap) GetBit(offset uint32) uint8 {
 }
 
 func (bm *BitMap) ClearBit(offset uint32) {
-	if offset > bm.bitSize {
+	if offset > bm.bitSize || offset <= 0 {
 		return
 	}
 	offset--
 	index, pos := offset>>3, offset%8
 	bm.data[index] &^= 0x01 << pos
+}
+
+func (bm *BitMap) BitCount() int {
+	count := 0
+	for _, num := range bm.data {
+		for num > 0 {
+			num &= num - 1
+			count++
+		}
+	}
+	return count
 }
 
 func (bm *BitMap) Clone() *BitMap {
@@ -116,4 +130,3 @@ func min(a, b uint32) uint32 {
 	}
 	return b
 }
-
